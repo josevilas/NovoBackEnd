@@ -9,7 +9,10 @@ const read = (request, response) => {
 };
 
 const create = (request, response) => {
-  const nome = request.body.nome;
+  const { nome, numero } = request.body;
+
+  
+ 
   if (!nome) {
     return response.status(400).json({
       error: "Nome da tarefa não fornecido",
@@ -17,19 +20,19 @@ const create = (request, response) => {
   }
 
   conn("listafone")
-    .insert({ nome: nome })
-    .then((tlistafone) => {
+    .insert({ nome, numero })
+    .then((tarefa) => {
       response.json(tarefa);
     })
     .catch((error) => {
       response.status(500).json({
-        error: "Erro ao inserir a tarefa no banco de dados",
+        error: "Erro ao inserir nome já cadsatrado no banco de dados",
       });
     });
 };
 
 const update = (request, response) => {
-  const nome = request.body.nome;
+  const { nome, numero } = request.body;
   const id = Number(request.params.id);
 
   if (!nome) {
@@ -38,7 +41,7 @@ const update = (request, response) => {
     });
   }
   conn("listafone")
-    .update({ nome: nome })
+    .update({ nome: nome, numero: numero  })
     .where({ id: id })
     .then((_) => {
       response.status(200).json({ msg: "Tarefa atualizada com sucesso!" });
@@ -56,7 +59,7 @@ const readById = (request, response) => {
     .select()
     .where({ id: id })
     .then((listafone) => {
-      response.status(200).json(tarefa);
+      response.status(200).json(listafone);
     })
     .catch((error) => {
       response.status(500).json({
